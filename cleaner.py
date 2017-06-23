@@ -87,7 +87,7 @@ def main(args):
             new_row['tags'] = [t for t in tags[str(int(tag))]['tags'] if t['id'] not in ids]
 
             if new_row['tags'] != []:
-                new_file[tag] = new_row
+                new_file[str(int(tag))] = new_row
                 bar.next()
 
         bar.finish()
