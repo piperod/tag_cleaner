@@ -135,7 +135,7 @@ class FilterTags(object):
         for tag in self.tags:
             new_row = {}
             new_row['tags'] = [t for t in self.tags[int(tag)]['tags']
-                               if t['c'][0] > left and t['c'][0]<right]
+                               if t['c'][0] > left and t['c'][0]<right ]
             if new_row['tags'] != []:
                 new_file[int(tag)] = new_row
         self.tags = new_file
@@ -261,12 +261,30 @@ def main(args):
     else:
         new_tags = n_tags
 
+    if args['box'] != None: 
+        boxs = map(int, args['box'].strip('[]').split(','))
+        box = [i for i in boxs]
+        left = box[0]
+        top  = box[1]
+        right = box[2]
+        bottom = box[3]
+        print("---- Excluding tags outside of the box--- left:",box[0],"top",box[1], "right", box[2], "bottom", box[3] )
+
+    else: 
+        left = 0
+        top = 0
+        right = 1000000
+        bottom = 10000000 
+
+
+
+
     bar = Bar('Filtering  Ids ', max=len(new_tags))
     for tag in new_tags:
         bar.next()
         new_row = {}
         new_row['tags'] = [t for t in tags[int(tag)]['tags'] if t[
-            'id'] not in ids]
+            'id'] not in ids and t['c'][0] > left and t['c'][0]<right and t['c'][1]>top and t['c'][1]< bottom]
         if new_row['tags'] != []:
             new_file[int(tag)] = new_row
 
@@ -290,6 +308,7 @@ if __name__ == '__main__':
                     help="Hamming distance tolerance by default cleans hamming bigger than 0")
     ap.add_argument("-window", "--window", required=False,
                     help="How many frames (window) to ignore on each id")
+    ap.add_argument("-bx", "--box", required= False, help = "Excluding box, [lef,top,right,bottom]" )
     args = vars(ap.parse_args())
 
     main(args)
