@@ -130,17 +130,43 @@ class FilterTags(object):
         return
 
 
-    def filter_box(self,left,right,bottom, up):
+   
+
+    def filter_box(self,left,top,right,bottom):
         new_file = {}
         for tag in self.tags:
             new_row = {}
             new_row['tags'] = [t for t in self.tags[int(tag)]['tags']
-                               if t['c'][0] > left and t['c'][0]<right ]
+                               if t['c'][0] > left and t['c'][0]<right and t['c'][1]>top and 
+                               t['c'][1]<bottom]
             if new_row['tags'] != []:
                 new_file[int(tag)] = new_row
         self.tags = new_file
         
         return
+    def merger_tags_tracks(self,tracks):
+        merge_tags = {}
+        tags = self.tags
+        tracks = tracks.dropna()[0]
+        for track in tracks.keys():
+            
+            for t in tags[track]['tags']:
+                
+                if str(t['id']) in tracks[track].keys():
+                    t['track']={}
+                    t['track']=tracks[track][str(t['id'])]
+                    try: 
+                        merge_tags[track]['tags'].append(t)
+                    except:
+                        merge_tags[track] ={}
+                        merge_tags[track]['tags']=[]
+                        merge_tags[track]['tags'].append(t)
+        self.merge_tags = merge_tags   
+        return merge_tags
+
+
+            
+
 
 
 
